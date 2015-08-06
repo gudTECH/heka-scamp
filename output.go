@@ -9,6 +9,7 @@ import "github.com/mozilla-services/heka/pipeline"
 
 type SCAMPOutputPluginConfig struct {
 	Service string `toml:"service"`
+	Action string `toml:"action"`
 }
 
 type SCAMPOutputPlugin struct {
@@ -20,6 +21,7 @@ func (sop *SCAMPOutputPlugin) ConfigStruct() interface{} {
 		fmt.Println("ConfigStruct")
 	return &SCAMPOutputPluginConfig {
 		Service: ":30101",
+		Action: "Test.test", // TODO no smart default for this
 	}
 }
 
@@ -51,7 +53,7 @@ func (sop *SCAMPOutputPlugin) Run(or pipeline.OutputRunner, h pipeline.PluginHel
 		if err == nil {
 			fmt.Printf("payload: %s", encoded)
 			sop.conn.Send(scamp.Request{
-				Action:         "helloworld.hello",
+				Action:         sop.conf.Action,
 				EnvelopeFormat: scamp.ENVELOPE_JSON,
 				Version:        1,
 				Blob:           encoded,

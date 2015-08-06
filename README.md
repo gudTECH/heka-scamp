@@ -27,5 +27,6 @@ decoder = "SimpleDecoder"
 
 [ScampOutput]
 encoder = "PayloadEncoder"
+action = "hello.helloworld"
 message_matcher = "TRUE"
 ```
