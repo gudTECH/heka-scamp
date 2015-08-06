@@ -12,3 +12,20 @@ go get github.com/gudTECH/scamp-go/scamp
 . ./env.sh
 sh build.sh
 ```
+
+## Sample ScampOutput config
+
+```
+[TailTestLog]
+type = "LogstreamerInput"
+log_directory = "/var/log"
+file_match = 'authd\.log'
+decoder = "SimpleDecoder"
+	[SimpleDecoder]
+	type = "SandboxDecoder"
+	filename = "simple_decoder.lua"
+
+[ScampOutput]
+encoder = "PayloadEncoder"
+message_matcher = "TRUE"
+```
