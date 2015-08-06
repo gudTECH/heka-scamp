@@ -1,6 +1,9 @@
 package heka_scamp
 
-import "fmt"
+import (
+	"fmt"
+	"errors"
+)
 import "github.com/gudtech/scamp-go/scamp"
 import "github.com/mozilla-services/heka/pipeline"
 
@@ -21,9 +24,11 @@ func (sop *SCAMPOutputPlugin) ConfigStruct() interface{} {
 }
 
 func (sop *SCAMPOutputPlugin) Init(config interface{}) (err error) {
+	scamp.Initialize()
+
 	sop.conf = config.(*SCAMPOutputPluginConfig)
 
-	fmt.Printf("Connecting to %s\n", sop.conf.Service)
+	scamp.Info.Printf( "Connecting to %s\n", sop.conf.Service )
 	sop.conn,err = scamp.Connect(sop.conf.Service)
 	if err != nil {
 		return
@@ -33,16 +38,34 @@ func (sop *SCAMPOutputPlugin) Init(config interface{}) (err error) {
 }
 
 func (sop *SCAMPOutputPlugin) Run(or pipeline.OutputRunner, h pipeline.PluginHelper) (err error){
-	fmt.Errorf("running")
-	for pack := range or.InChan() {
-		fmt.Errorf("got a payload")
-		payload := pack.Message.Payload
-		fmt.Printf("payload: %s", payload)
+	var pack *pipeline.PipelinePack
+
+	// We have no default encoder
+	if or.Encoder() == nil {
+		return errors.New("Encoder required.")
 	}
+
+	for pack = range or.InChan() {
+		encoded,err := or.Encode(pack) // pack.Message.GetPayload()
+
+		if err == nil {
+			fmt.Printf("payload: %s", encoded)
+			sop.conn.Send(scamp.Request{
+				Action:         "helloworld.hello",
+				EnvelopeFormat: scamp.ENVELOPE_JSON,
+				Version:        1,
+				Blob:           encoded,
+			})
+		}
+
+		pack.Recycle(err)
+	}
+	fmt.Println("sup from end of for loop in Run")
 	return
 }
 
 func (sop *SCAMPOutputPlugin) CleanUp() {
+	fmt.Println("sup from cleanup")
 	return
 }
 
