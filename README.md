@@ -30,3 +30,13 @@ encoder = "PayloadEncoder"
 action = "hello.helloworld"
 message_matcher = "TRUE"
 ```
+
+## Sample ScampInput config
+
+This will reuse an instance of `scamp.Service` and register handlers which will feed in to the pipeline
+
+```
+[ScampInput]
+[[ScampInput.handler]]
+action = "sup.dude"
+```

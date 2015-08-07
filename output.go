@@ -73,7 +73,6 @@ func (sop *SCAMPOutputPlugin) CleanUp() {
 
 func init(){
 	pipeline.RegisterPlugin("ScampOutput", func() interface{} {
-		fmt.Println("RegisterPlugin/SCAMP")
 		return new(SCAMPOutputPlugin)
 	})
 }
