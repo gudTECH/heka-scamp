@@ -48,11 +48,12 @@ func (sop *SCAMPOutputPlugin) Run(or pipeline.OutputRunner, h pipeline.PluginHel
 	}
 
 	for pack = range or.InChan() {
+		scamp.Info.Printf("received pipeline pack")
 		encoded,err := or.Encode(pack) // pack.Message.GetPayload()
 
 		if err == nil {
-			fmt.Printf("payload: %s", encoded)
-			sop.conn.Send(scamp.Request{
+			scamp.Info.Printf("payload: %s", encoded)
+			sop.conn.Send(&scamp.Request{
 				Action:         sop.conf.Action,
 				EnvelopeFormat: scamp.ENVELOPE_JSON,
 				Version:        1,

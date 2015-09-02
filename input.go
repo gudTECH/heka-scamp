@@ -51,8 +51,11 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		sop.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
 			var pack *pipeline.PipelinePack
 
-			pack = <-ir.InChan()
+			pack = <-ir.InChan()			
 			pack.Message.SetPayload( string(req.Blob[:]) )
+
+			scamp.Trace.Printf("closing session")
+			sess.CloseReply()
 		})
 	}
 
@@ -61,6 +64,7 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 }
 
 func (sop *SCAMPInputPlugin) Stop() {
+	sop.service.Stop()
 	return
 }
 
