@@ -6,7 +6,8 @@ import "github.com/gudtech/scamp-go/scamp"
 import "github.com/mozilla-services/heka/pipeline"
 
 type SCAMPInputPluginConfig struct {
-	Service string `toml:"service"`
+	Service string `toml:"listen"`
+	Name string `toml:"name"`
 	Handlers map[string]SCAMPInputHandlerConfig `toml:"handler"`
 }
 
@@ -39,7 +40,7 @@ func (sop *SCAMPInputPlugin) Init(config interface{}) (err error) {
 }
 
 func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelper) (err error) {
-	sop.service,err = scamp.NewService(sop.conf.Service)
+	sop.service,err = scamp.NewService(sop.conf.Service, sop.conf.Name)
 	if err != nil {
 		return
 	}

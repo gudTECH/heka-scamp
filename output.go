@@ -18,7 +18,7 @@ type SCAMPOutputPlugin struct {
 }
 
 func (sop *SCAMPOutputPlugin) ConfigStruct() interface{} {
-		fmt.Println("ConfigStruct")
+	fmt.Println("ConfigStruct")
 	return &SCAMPOutputPluginConfig {
 		Service: ":30101",
 		Action: "Test.test", // TODO no smart default for this
