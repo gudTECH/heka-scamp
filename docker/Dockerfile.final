@@ -1,6 +1,6 @@
 # heka image
 # installs heka from a deb package. based on heka's Docker.final
-FROM xrlx/heka_base
+FROM debian:jessie
 MAINTAINER Xavier Lange <xavier.lange@gudtech.com> (@tureus)
 
 COPY heka.deb /tmp/heka.deb
