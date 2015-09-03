@@ -1,0 +1,18 @@
+# hi there from Xavier
+
+[hekad]
+maxprocs = 2
+
+[ScampInput]
+Name = "logging"
+Service = ":30100"
+[ScampInput.handler.0]
+Action = "Logger.info"
+
+[StatAccumInput]
+
+# Heka dashboard for internal metrics and time series graphs
+[Dashboard]
+type = "DashboardOutput"
+address = ":4352"
+ticker_interval = 15
