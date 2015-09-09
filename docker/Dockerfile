@@ -22,4 +22,5 @@ RUN curl -sSL https://get.docker.io/builds/Linux/x86_64/docker-1.2.0 -o /tmp/doc
     mv /tmp/docker /usr/local/bin/docker && \
     chmod +x /usr/local/bin/docker
 
+WORKDIR /heka_final
 CMD docker build -t xrlx/heka_scamp /heka_final

@@ -5,7 +5,7 @@ maxprocs = 2
 
 [ScampInput]
 Name = "logging"
-Service = ":30100"
+Listen = ":30100"
 [ScampInput.handler.0]
 Action = "Logger.info"
 
@@ -16,3 +16,17 @@ Action = "Logger.info"
 type = "DashboardOutput"
 address = ":4352"
 ticker_interval = 15
+
+[ESJsonEncoder]
+index = "%{Type}-%{%Y.%m.%d}"
+es_index_from_timestamp = true
+type_name = "%{Type}"
+    [ESJsonEncoder.field_mappings]
+    Timestamp = "@timestamp"
+    Severity = "level"
+
+[ElasticSearchOutput]
+message_matcher = "TRUE"
+server = "http://172.17.0.4:9200" # TODO: this needs config injection
+encoder = "ESJsonEncoder"
+flush_interval = 50
