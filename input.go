@@ -5,6 +5,9 @@ import "errors"
 import "github.com/gudtech/scamp-go/scamp"
 import "github.com/mozilla-services/heka/pipeline"
 
+import "time"
+import "github.com/pborman/uuid"
+
 type SCAMPInputPluginConfig struct {
 	Service string `toml:"listen"`
 	Name string `toml:"name"`
@@ -13,6 +16,8 @@ type SCAMPInputPluginConfig struct {
 
 type SCAMPInputHandlerConfig struct {
 	Action string `toml:"action"`
+	Type string `toml:"type"`
+	Severity int `toml:"severity"`
 }
 
 type SCAMPInputPlugin struct {
@@ -52,13 +57,26 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		sop.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
 			var pack *pipeline.PipelinePack
 
+			// Example code from the documentation: https://hekad.readthedocs.org/en/v0.9.2/developing/plugin.html
+		    // pack := <-hi.ir.InChan()
+		    // pack.Message.SetUuid(uuid.NewRandom())
+		    // pack.Message.SetTimestamp(time.Now().UnixNano())
+		    // pack.Message.SetType("heka.httpinput.error")
+		    // pack.Message.SetPayload(err.Error())
+		    // pack.Message.SetSeverity(hi.conf.ErrorSeverity)
+		    // pack.Message.SetLogger(url)
+		    // hi.ir.Deliver(pack)
+		    // return
+
 			pack = <-ir.InChan()
-			payload := string(req.Blob[:])
-			scamp.Trace.Printf("payload: `%s`", payload)
-			pack.Message.SetPayload(payload)
+			pack.Message.SetUuid(uuid.NewRandom())
+			pack.Message.SetTimestamp(time.Now().UnixNano())
+			pack.Message.SetType(handlerConfig.Type)
+			pack.Message.SetPayload(string(req.Blob[:]))
+			pack.Message.SetSeverity(int32(handlerConfig.Severity))
+			pack.Message.SetLogger("heka-scamp") // TODO not sure what this means
 			ir.Deliver(pack)
 
-			scamp.Trace.Printf("closing session")
 			sess.CloseReply()
 		})
 	}
