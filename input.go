@@ -77,7 +77,10 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			pack.Message.SetLogger("heka-scamp") // TODO not sure what this means
 			ir.Deliver(pack)
 
-			sess.CloseReply()
+			err = sess.Send(scamp.Reply{Blob: []byte("{}")})
+			if err != nil {
+				return
+			}
 		})
 	}
 
