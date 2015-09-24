@@ -18,6 +18,11 @@ RUN mkdir /etc/SCAMP && mkdir /var/log/scamp
 COPY docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
 
+# TODO: Disable outside of dev
+COPY dev-logging.key /etc/SCAMP/services/logging.key
+COPY dev-logging.crt /etc/SCAMP/services/logging.crt
+COPY soa.conf /etc/SCAMP/soa.conf
+
 EXPOSE 30100
 EXPOSE 4352
 

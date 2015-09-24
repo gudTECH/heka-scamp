@@ -29,7 +29,7 @@ type_name = "%{Type}"
     Severity = "level"
 
 [ElasticSearchOutput]
-message_matcher = "TRUE"
+message_matcher = "Logger == 'heka-scamp'"
 server = "http://elasticsearch:9200" # TODO: this needs config injection
 encoder = "ESJsonEncoder"
 flush_interval = 50
@@ -38,5 +38,5 @@ flush_interval = 50
 [RstEncoder]
 
 [LogOutput]
-message_matcher = "TRUE"
+message_matcher = "Logger == 'heka-scamp'"
 encoder = "RstEncoder"

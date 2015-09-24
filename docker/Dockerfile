@@ -12,6 +12,11 @@ COPY Dockerfile.final /heka_final/Dockerfile
 COPY hekad.toml /heka_final/
 COPY docker-entrypoint.sh /heka_final/
 
+# TODO: disable this outside of dev
+COPY dev-logging.key /heka_final/
+COPY dev-logging.crt /heka_final/
+COPY soa.conf /heka_final/
+
 # I refuse to have stale SCAMP init scripts
 RUN git clone https://github.com/gudTECH/scamp.git /scamp
 RUN cp /scamp/scripts/init-system-config /heka_final/
