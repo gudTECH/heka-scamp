@@ -20,6 +20,22 @@ type = "DashboardOutput"
 address = ":4352"
 ticker_interval = 15
 
+# After
+[es_payload]
+type = "SandboxEncoder"
+filename = "lua_encoders/es_payload.lua"
+    [es_payload.config]
+    es_index_from_timestamp = true
+    index = "%{Logger}-%{%Y.%m.%d}"
+    type_name = "%{Type}-%{Severity}"
+
+[ElasticSearchOutput]
+message_matcher = "Logger == 'heka-scamp'"
+server = "http://elasticsearch:9200"
+encoder = "es_payload"
+flush_interval = 50
+
+# Before
 [ESJsonEncoder]
 index = "%{Type}-%{%Y.%m.%d}"
 es_index_from_timestamp = true
@@ -27,16 +43,20 @@ type_name = "%{Type}"
     [ESJsonEncoder.field_mappings]
     Timestamp = "@timestamp"
     Severity = "level"
-
-[ElasticSearchOutput]
-message_matcher = "Logger == 'heka-scamp'"
-server = "http://elasticsearch:9200" # TODO: this needs config injection
-encoder = "ESJsonEncoder"
-flush_interval = 50
-
-# Debugging info
-[RstEncoder]
+# 
+# [ElasticSearchOutput]
+# message_matcher = "Logger == 'heka-scamp'"
+# server = "http://elasticsearch:9200" # TODO: this needs config injection
+# encoder = "ESJsonEncoder"
+# flush_interval = 50
 
 [LogOutput]
 message_matcher = "Logger == 'heka-scamp'"
-encoder = "RstEncoder"
+encoder = "ESJsonEncoder"
+
+# Debugging info
+# [RstEncoder]
+# 
+# [LogOutput]
+# message_matcher = "Logger == 'heka-scamp'"
+# encoder = "RstEncoder"
