@@ -4,7 +4,7 @@ FROM debian:jessie
 MAINTAINER Xavier Lange <xavier.lange@gudtech.com> (@tureus)
 
 COPY heka.deb /tmp/heka.deb
-RUN apt-get update && apt-get install -y libgeoip1 openssl
+RUN apt-get update && apt-get install -y libgeoip1 openssl netcat
 RUN dpkg -i /tmp/heka.deb && rm /tmp/heka.deb
 
 COPY hekad.toml /etc/heka/conf.d/00-hekad.toml
