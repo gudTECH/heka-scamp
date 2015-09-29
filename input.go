@@ -57,16 +57,6 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		sop.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
 			var pack *pipeline.PipelinePack
 
-			// Example code from the documentation: https://hekad.readthedocs.org/en/v0.9.2/developing/plugin.html
-		    // pack := <-hi.ir.InChan()
-		    // pack.Message.SetUuid(uuid.NewRandom())
-		    // pack.Message.SetTimestamp(time.Now().UnixNano())
-		    // pack.Message.SetType("heka.httpinput.error")
-		    // pack.Message.SetPayload(err.Error())
-		    // pack.Message.SetSeverity(hi.conf.ErrorSeverity)
-		    // pack.Message.SetLogger(url)
-		    // hi.ir.Deliver(pack)
-		    // return
 
 			pack = <-ir.InChan()
 			pack.Message.SetUuid(uuid.NewRandom())
