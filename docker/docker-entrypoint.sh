@@ -13,4 +13,9 @@ if [ ! -f /etc/SCAMP/services/logging.key ]; then
 	provision-soa-service logging main
 fi
 
+until nc -z elasticsearch 9200; do
+    echo "$(date) - waiting for elasticsearch..."
+    sleep 1
+done
+
 exec /usr/bin/hekad "-config=/etc/heka/conf.d"
