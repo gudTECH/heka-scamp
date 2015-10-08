@@ -50,6 +50,14 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		return
 	}
 
+	announcer,err := scamp.NewDiscoveryAnnouncer()
+	if err != nil {
+		scamp.Error.Printf("failed to create announcer: `%s`", err)
+		return
+	}
+	announcer.Track(sop.service)
+	go announcer.AnnounceLoop()
+
 	var handlerConfig SCAMPInputHandlerConfig
 	for _,handlerConfig = range sop.conf.Handlers {
 		scamp.Trace.Printf("registering handler: `%s`", handlerConfig)
