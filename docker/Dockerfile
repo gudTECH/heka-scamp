@@ -3,7 +3,7 @@ MAINTAINER Xavier Lange <xavier.lange@gudtech.com> (@tureus)
 
 RUN echo "add_external_plugin(git https://github.com/gudtech/heka-scamp master)" > "./cmake/plugin_loader.cmake"
 
-RUN . ./env.sh && go get github.com/gudtech/scamp-go/scamp
+RUN . ./env.sh && go get github.com/gudtech/scamp-go/scamp && go get golang.org/x/net/ipv4
 RUN . ./env.sh && . ./build.sh && cd /heka/build && make deb
 
 RUN mkdir -p /heka_final
