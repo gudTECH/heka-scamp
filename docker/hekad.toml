@@ -5,7 +5,7 @@ maxprocs = 2
 
 [ScampInput]
 Name = "logging"
-Listen = ":30100"
+Listen = "127.0.0.1:30100"
 [ScampInput.handler.0]
 Action = "Logger.info"
 Type = "Logger"
@@ -31,7 +31,7 @@ filename = "lua_encoders/es_payload.lua"
 
 [ElasticSearchOutput]
 message_matcher = "Logger == 'heka-scamp'"
-server = "http://elasticsearch:9200"
+server = "http://127.0.0.1:9200"
 encoder = "es_payload"
 flush_interval = 50
 
