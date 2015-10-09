@@ -13,8 +13,11 @@ if [ ! -f /etc/SCAMP/services/logging.key ]; then
 	provision-soa-service logging main
 fi
 
-until nc -z elasticsearch 9200; do
-    echo "$(date) - waiting for elasticsearch..."
+ELASTICSEARCH_HOST="localhost"
+ELASTICSEARCH_PORT=9200
+
+until nc -z $ELASTICSEARCH_HOST $ELASTICSEARCH_PORT; do
+    echo "$(date) - waiting for elasticsearch at $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT..."
     sleep 1
 done
 
