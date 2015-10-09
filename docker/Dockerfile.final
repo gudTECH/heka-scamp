@@ -26,4 +26,4 @@ COPY soa.conf /etc/SCAMP/soa.conf
 EXPOSE 30100
 EXPOSE 4352
 
-ENTRYPOINT ["/docker-entrypoint.sh", "-config=/etc/heka/conf.d"]
+CMD ["/docker-entrypoint.sh", "-config=/etc/heka/conf.d"]
