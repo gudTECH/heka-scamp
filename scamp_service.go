@@ -6,6 +6,7 @@ import "github.com/gudtech/scamp-go/scamp"
 import "github.com/mozilla-services/heka/pipeline"
 
 import "time"
+import "fmt"
 import "github.com/pborman/uuid"
 
 type SCAMPInputPluginConfig struct {
@@ -18,6 +19,7 @@ type SCAMPInputHandlerConfig struct {
 	Action string `toml:"action"`
 	Type string `toml:"type"`
 	Severity int `toml:"severity"`
+	Decoder string `toml:"decoder"`
 }
 
 type SCAMPInputPlugin struct {
@@ -25,18 +27,18 @@ type SCAMPInputPlugin struct {
 	service *scamp.Service
 }
 
-func (sop *SCAMPInputPlugin) ConfigStruct() interface{} {
+func (sip *SCAMPInputPlugin) ConfigStruct() interface{} {
 	return &SCAMPInputPluginConfig {
 		Service: ":30101",
 		Handlers: make(map[string]SCAMPInputHandlerConfig),
 	}
 }
 
-func (sop *SCAMPInputPlugin) Init(config interface{}) (err error) {
+func (sip *SCAMPInputPlugin) Init(config interface{}) (err error) {
 	scamp.Initialize()
-	sop.conf = config.(*SCAMPInputPluginConfig)
+	sip.conf = config.(*SCAMPInputPluginConfig)
 
-	if len(sop.conf.Handlers) < 1 {
+	if len(sip.conf.Handlers) < 1 {
 		err = errors.New("must provide at least 1 handler")
 		return
 	}
@@ -44,8 +46,17 @@ func (sop *SCAMPInputPlugin) Init(config interface{}) (err error) {
 	return
 }
 
-func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelper) (err error) {
-	sop.service,err = scamp.NewService(sop.conf.Service, sop.conf.Name)
+func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelper) (err error) {
+	var decoder *pipeline.Decoder
+
+	if sip.conf.Decoder != "" {
+		if dRunner, ok := h.DecoderRunner(sip.conf.Decoder, fmt.Sprintf("%s-%s", ir.Name(), sip.conf.Decoder)); !ok {
+			return fmt.Errorf("Decoder not found: %s", sip.conf.Decoder)
+		}
+		decoder = &dRunner.Decoder()
+	}
+
+	sip.service,err = scamp.NewService(sip.conf.Service, sip.conf.Name)
 	if err != nil {
 		return
 	}
@@ -55,16 +66,15 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		scamp.Error.Printf("failed to create announcer: `%s`", err)
 		return
 	}
-	announcer.Track(sop.service)
+	announcer.Track(sip.service)
 	go announcer.AnnounceLoop()
 
 	var handlerConfig SCAMPInputHandlerConfig
-	for _,handlerConfig = range sop.conf.Handlers {
+	for _,handlerConfig = range sip.conf.Handlers {
 		scamp.Trace.Printf("registering handler: `%s`", handlerConfig)
 
-		sop.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
+		sip.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
 			var pack *pipeline.PipelinePack
-
 
 			pack = <-ir.InChan()
 			pack.Message.SetUuid(uuid.NewRandom())
@@ -82,12 +92,12 @@ func (sop *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		})
 	}
 
-	sop.service.Run()
+	sip.service.Run()
 	return
 }
 
-func (sop *SCAMPInputPlugin) Stop() {
-	sop.service.Stop()
+func (sip *SCAMPInputPlugin) Stop() {
+	sip.service.Stop()
 	return
 }
 
