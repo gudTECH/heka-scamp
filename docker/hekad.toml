@@ -8,9 +8,7 @@ Name = "logging"
 Listen = "0.0.0.0:30100"
 Decoder = "LogPayloadDecoder"
 [ScampInput.handler.0]
-Action = "Logger.info"
-Type = "Logger"
-Severity = 1
+Action = "Logger.log"
 
 [LogPayloadDecoder]
 type = "SandboxDecoder"

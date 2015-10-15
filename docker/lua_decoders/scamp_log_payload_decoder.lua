@@ -6,9 +6,11 @@ function process_message()
   local payload = read_message("Payload")
 
   -- check length (cjson.encode will crash if payload is > 11500 characters)
-  if #payload > 11500 then
-     return -1
-  end
+  -- TODO: Xavier is not sure where this potential crash info came from, couldn't
+  -- find any info elsewhere
+  -- if #payload > 11500 then
+  --    return -1
+  -- end
 
   -- We just need to be sure the payload is valid JSON
   local ok, json = pcall(cjson.decode, payload)
