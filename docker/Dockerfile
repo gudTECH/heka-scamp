@@ -11,6 +11,7 @@ RUN find /heka/build -name "*.deb" -exec cp {} /heka_final/heka.deb \;
 COPY Dockerfile.final /heka_final/Dockerfile
 COPY hekad.toml /heka_final/
 COPY docker-entrypoint.sh /heka_final/
+COPY lua_decoders /heka_final/lua_decoders/
 
 # TODO: disable this outside of dev
 COPY dev-logging.key /heka_final/

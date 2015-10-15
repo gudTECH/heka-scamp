@@ -3,18 +3,12 @@
 FROM debian:jessie
 MAINTAINER Xavier Lange <xavier.lange@gudtech.com> (@tureus)
 
-COPY heka.deb /tmp/heka.deb
 RUN apt-get update && apt-get install -y libgeoip1 openssl netcat
-RUN dpkg -i /tmp/heka.deb && rm /tmp/heka.deb
-
-COPY hekad.toml /etc/heka/conf.d/00-hekad.toml
 
 # Scripts for bootstrapping a container instance
 COPY init-system-config /usr/bin/
 COPY provision-soa-service /usr/bin/
-RUN chmod a+x /usr/bin/init-system-config
-RUN chmod a+x /usr/bin/provision-soa-service
-RUN mkdir /etc/SCAMP && mkdir /var/log/scamp
+RUN chmod a+x /usr/bin/init-system-config &&  chmod a+x /usr/bin/provision-soa-service && mkdir /etc/SCAMP && mkdir /var/log/scamp
 COPY docker-entrypoint.sh /
 RUN chmod a+x /docker-entrypoint.sh
 
@@ -22,6 +16,11 @@ RUN chmod a+x /docker-entrypoint.sh
 COPY dev-logging.key /etc/SCAMP/services/logging.key
 COPY dev-logging.crt /etc/SCAMP/services/logging.crt
 COPY soa.conf /etc/SCAMP/soa.conf
+
+COPY heka.deb /tmp/heka.deb
+RUN dpkg -i /tmp/heka.deb && rm /tmp/heka.deb
+COPY hekad.toml /etc/heka/conf.d/00-hekad.toml
+COPY lua_decoders/ /etc/heka/lua_decoders/
 
 EXPOSE 30100
 EXPOSE 4352

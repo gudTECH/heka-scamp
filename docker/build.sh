@@ -13,3 +13,5 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -ti xrlx/heka_scamp
 
 # clean up
 # docker rmi xrlx/heka_scamp_build
+
+docker tag -f xrlx/heka_scamp gcr.io/retailops-1/heka_scamp

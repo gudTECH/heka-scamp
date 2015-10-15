@@ -5,12 +5,16 @@ maxprocs = 2
 
 [ScampInput]
 Name = "logging"
-Listen = "127.0.0.1:30100"
+Listen = "0.0.0.0:30100"
+Decoder = "LogPayloadDecoder"
 [ScampInput.handler.0]
 Action = "Logger.info"
 Type = "Logger"
 Severity = 1
 
+[LogPayloadDecoder]
+type = "SandboxDecoder"
+filename = "/etc/heka/lua_decoders/scamp_log_payload_decoder.lua"
 
 [StatAccumInput]
 
@@ -21,34 +25,35 @@ address = ":4352"
 ticker_interval = 15
 
 # After
-[es_payload]
-type = "SandboxEncoder"
-filename = "lua_encoders/es_payload.lua"
-    [es_payload.config]
-    es_index_from_timestamp = true
-    index = "%{Logger}-%{%Y.%m.%d}"
-    type_name = "%{Type}-%{Severity}"
-
-[ElasticSearchOutput]
-message_matcher = "Logger == 'heka-scamp'"
-server = "http://127.0.0.1:9200"
-encoder = "es_payload"
-flush_interval = 50
+# [es_payload]
+# type = "SandboxEncoder"
+# filename = "lua_encoders/es_payload.lua"
+#     [es_payload.config]
+#     es_index_from_timestamp = true
+#     index = "%{Logger}-%{%Y.%m.%d}"
+#     type_name = "%{Type}-%{Severity}"
+# 
+# [ElasticSearchOutput]
+# message_matcher = "Logger == 'heka-scamp'"
+# server = "http://127.0.0.1:9200"
+# encoder = "es_payload"
+# flush_interval = 50
 
 # Before
 [ESJsonEncoder]
 index = "%{Type}-%{%Y.%m.%d}"
 es_index_from_timestamp = true
 type_name = "%{Type}"
+fields = ["Timestamp", "Type", "Logger", "DynamicFields" ]
     [ESJsonEncoder.field_mappings]
-    Timestamp = "@timestamp"
+    Timestamp = "timestamp"
     Severity = "level"
-# 
-# [ElasticSearchOutput]
-# message_matcher = "Logger == 'heka-scamp'"
-# server = "http://elasticsearch:9200" # TODO: this needs config injection
-# encoder = "ESJsonEncoder"
-# flush_interval = 50
+
+[ElasticSearchOutput]
+message_matcher = "Logger == 'heka-scamp'"
+server = "http://localhost:9200" # TODO: this needs config injection
+encoder = "ESJsonEncoder"
+flush_interval = 50
 
 [LogOutput]
 message_matcher = "Logger == 'heka-scamp'"
@@ -59,4 +64,4 @@ encoder = "ESJsonEncoder"
 # 
 # [LogOutput]
 # message_matcher = "Logger == 'heka-scamp'"
-# encoder = "RstEncoder"
+# encoder = "RstEncoder"# 
