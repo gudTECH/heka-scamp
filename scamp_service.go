@@ -6,7 +6,6 @@ import "github.com/gudtech/scamp-go/scamp"
 import "github.com/mozilla-services/heka/pipeline"
 
 import "time"
-import "fmt"
 import "github.com/pborman/uuid"
 
 type SCAMPInputPluginConfig struct {
@@ -47,15 +46,6 @@ func (sip *SCAMPInputPlugin) Init(config interface{}) (err error) {
 }
 
 func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelper) (err error) {
-	var decoder *pipeline.Decoder
-
-	if sip.conf.Decoder != "" {
-		if dRunner, ok := h.DecoderRunner(sip.conf.Decoder, fmt.Sprintf("%s-%s", ir.Name(), sip.conf.Decoder)); !ok {
-			return fmt.Errorf("Decoder not found: %s", sip.conf.Decoder)
-		}
-		decoder = &dRunner.Decoder()
-	}
-
 	sip.service,err = scamp.NewService(sip.conf.Service, sip.conf.Name)
 	if err != nil {
 		return
@@ -82,7 +72,7 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			pack.Message.SetType(handlerConfig.Type)
 			pack.Message.SetPayload(string(req.Blob[:]))
 			pack.Message.SetSeverity(int32(handlerConfig.Severity))
-			pack.Message.SetLogger("heka-scamp") // TODO not sure what this means
+			pack.Message.SetLogger("logsink") // TODO not sure what this means
 			ir.Deliver(pack)
 
 			err = sess.Send(scamp.Reply{Blob: []byte("{}")})
