@@ -19,6 +19,7 @@ type SCAMPInputHandlerConfig struct {
 	Type string `toml:"type"`
 	Severity int `toml:"severity"`
 	Decoder string `toml:"decoder"`
+	Logger string `toml:"logger"`
 }
 
 type SCAMPInputPlugin struct {
@@ -69,10 +70,9 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			pack = <-ir.InChan()
 			pack.Message.SetUuid(uuid.NewRandom())
 			pack.Message.SetTimestamp(time.Now().UnixNano())
-			pack.Message.SetType(handlerConfig.Type)
 			pack.Message.SetPayload(string(req.Blob[:]))
 			pack.Message.SetSeverity(int32(handlerConfig.Severity))
-			pack.Message.SetLogger("logsink") // TODO not sure what this means
+			pack.Message.SetLogger(handlerConfig.Logger) // TODO not sure what this means
 			ir.Deliver(pack)
 
 			err = sess.Send(scamp.Reply{Blob: []byte("{}")})

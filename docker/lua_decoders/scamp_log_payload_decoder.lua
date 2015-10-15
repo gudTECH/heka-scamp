@@ -1,4 +1,5 @@
 local cjson = require "cjson"
+local string = require "string"
 
 -- code "borrowed" from https://summitroute.com/blog/2015/06/14/shipping_windows_events_to_heka_and_elasticsearch/#get-events-into-elasticsearch
 
@@ -23,7 +24,22 @@ function process_message()
     if type(v) == "table" then
         write_message("Fields[" .. k .. "]", cjson.encode(v))
     else
+      if k == "type" or k == "Type" then
+        local rawtype = v
+
+        dotstart,_dotend = string.find(rawtype, "%.")
+        if dotstart == nil then
+          return -1
+        end
+        
+        local index = rawtype:sub(0,dotstart-1)
+        local type = rawtype:sub(dotstart+1)
+
+        write_message("Type", type)
+        write_message("Hostname", index) -- Had to stash it somewhere unused
+      else
         write_message("Fields[" .. k .. "]", v)
+      end
     end
   end
 

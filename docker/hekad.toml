@@ -8,7 +8,8 @@ Name = "logging"
 Listen = "0.0.0.0:30100"
 Decoder = "LogPayloadDecoder"
 [ScampInput.handler.0]
-Action = "Logger.log"
+Action = "Logger.log" # the action's name (sent out in announcements)
+Logger = "logsink" # the 'Logger' value on the internal heka message. Used for internal routing.
 
 [LogPayloadDecoder]
 type = "SandboxDecoder"
@@ -22,44 +23,23 @@ type = "DashboardOutput"
 address = ":4352"
 ticker_interval = 15
 
-# After
-# [es_payload]
-# type = "SandboxEncoder"
-# filename = "lua_encoders/es_payload.lua"
-#     [es_payload.config]
-#     es_index_from_timestamp = true
-#     index = "%{Logger}-%{%Y.%m.%d}"
-#     type_name = "%{Type}-%{Severity}"
-# 
-# [ElasticSearchOutput]
-# message_matcher = "Logger == 'heka-scamp'"
-# server = "http://127.0.0.1:9200"
-# encoder = "es_payload"
-# flush_interval = 50
-
 # Before
 [ESJsonEncoder]
-index = "%{Type}-%{%Y.%m.%d}"
+index = "%{Hostname}-%{%Y.%m.%d}"
 es_index_from_timestamp = true
-type_name = "%{Type}"
+type_name = "%{Type}" # hostname is just being used to stash the index name from the lua decoder. scamp doesn't preserve source so this is safe, right?
 fields = ["Timestamp", "Type", "Logger", "DynamicFields" ]
     [ESJsonEncoder.field_mappings]
     Timestamp = "timestamp"
     Severity = "level"
 
 [ElasticSearchOutput]
-message_matcher = "Logger == 'heka-scamp'"
+message_matcher = "Logger == 'logsink'"
 server = "http://localhost:9200" # TODO: this needs config injection
 encoder = "ESJsonEncoder"
 flush_interval = 50
 
-[LogOutput]
-message_matcher = "Logger == 'heka-scamp'"
-encoder = "ESJsonEncoder"
-
-# Debugging info
-# [RstEncoder]
-# 
+# Just in case you want to see the JSON sent to elasticsearch
 # [LogOutput]
-# message_matcher = "Logger == 'heka-scamp'"
-# encoder = "RstEncoder"# 
+# message_matcher = "Logger == 'logsink'"
+# encoder = "ESJsonEncoder"
