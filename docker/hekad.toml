@@ -28,7 +28,7 @@ ticker_interval = 15
 index = "%{Hostname}-%{%Y.%m.%d}"
 es_index_from_timestamp = true
 type_name = "%{Type}" # hostname is just being used to stash the index name from the lua decoder. scamp doesn't preserve source so this is safe, right?
-fields = ["Timestamp", "Type", "Logger", "DynamicFields" ]
+fields = ["Timestamp", "Logger", "DynamicFields" ]
     [ESJsonEncoder.field_mappings]
     Timestamp = "timestamp"
     Severity = "level"

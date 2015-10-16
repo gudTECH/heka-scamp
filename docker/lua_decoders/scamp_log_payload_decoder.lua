@@ -27,13 +27,17 @@ function process_message()
       if k == "type" or k == "Type" then
         local rawtype = v
 
+        local index
+        local type
+
         dotstart,_dotend = string.find(rawtype, "%.")
         if dotstart == nil then
-          return -1
+          index = "unknown"
+          type = rawtype
+        else
+          index = rawtype:sub(0,dotstart-1)
+          type  = rawtype:sub(dotstart+1)
         end
-        
-        local index = rawtype:sub(0,dotstart-1)
-        local type = rawtype:sub(dotstart+1)
 
         write_message("Type", type)
         write_message("Hostname", index) -- Had to stash it somewhere unused
