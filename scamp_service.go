@@ -64,19 +64,23 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 	for _,handlerConfig = range sip.conf.Handlers {
 		scamp.Trace.Printf("registering handler: `%s`", handlerConfig)
 
-		sip.service.Register(handlerConfig.Action, func(req scamp.Request, sess *scamp.Session) {
+		sip.service.Register(handlerConfig.Action, func(msg *scamp.Message, client *scamp.Client) {
 			var pack *pipeline.PipelinePack
 
 			pack = <-ir.InChan()
 			pack.Message.SetUuid(uuid.NewRandom())
 			pack.Message.SetTimestamp(time.Now().UnixNano())
-			pack.Message.SetPayload(string(req.Blob[:]))
+			pack.Message.SetPayload(string(msg.Bytes()[:]))
 			pack.Message.SetSeverity(int32(handlerConfig.Severity))
 			pack.Message.SetLogger(handlerConfig.Logger) // TODO not sure what this means
 			ir.Deliver(pack)
 
-			err = sess.Send(scamp.Reply{Blob: []byte("{}")})
+			reply := scamp.NewMessage()
+			reply.SetEnvelope(scamp.ENVELOPE_JSON)
+			reply.Write([]byte("{}"))
+			_,err = client.Send(reply)
 			if err != nil {
+				scamp.Error.Printf("could not reply to message: `%s`", err)
 				return
 			}
 		})

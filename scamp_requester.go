@@ -14,7 +14,7 @@ type SCAMPOutputPluginConfig struct {
 
 type SCAMPOutputPlugin struct {
 	conf *SCAMPOutputPluginConfig
-	conn *scamp.Connection
+	client *scamp.Client
 }
 
 func (sop *SCAMPOutputPlugin) ConfigStruct() interface{} {
@@ -31,7 +31,7 @@ func (sop *SCAMPOutputPlugin) Init(config interface{}) (err error) {
 	sop.conf = config.(*SCAMPOutputPluginConfig)
 
 	scamp.Info.Printf( "Connecting to %s\n", sop.conf.Service )
-	sop.conn,err = scamp.Connect(sop.conf.Service)
+	sop.client,err = scamp.Dial(sop.conf.Service)
 	if err != nil {
 		return
 	}
@@ -53,12 +53,11 @@ func (sop *SCAMPOutputPlugin) Run(or pipeline.OutputRunner, h pipeline.PluginHel
 
 		if err == nil {
 			scamp.Info.Printf("payload: %s", encoded)
-			sop.conn.Send(&scamp.Request{
-				Action:         sop.conf.Action,
-				EnvelopeFormat: scamp.ENVELOPE_JSON,
-				Version:        1,
-				Blob:           encoded,
-			})
+			msg := scamp.NewMessage()
+			msg.SetEnvelope(scamp.ENVELOPE_JSON)
+			msg.SetAction(sop.conf.Action)
+			msg.SetVersion(1)
+			msg.Write(encoded)
 		}
 
 		pack.Recycle(err)
