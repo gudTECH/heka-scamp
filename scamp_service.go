@@ -76,6 +76,7 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			ir.Deliver(pack)
 
 			reply := scamp.NewMessage()
+			reply.SetMessageType(scamp.MESSAGE_TYPE_REPLY)
 			reply.SetEnvelope(scamp.ENVELOPE_JSON)
 			reply.Write([]byte("{}"))
 			_,err = client.Send(reply)
