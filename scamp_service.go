@@ -81,7 +81,7 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			reply.SetRequestId(msg.RequestId)
 			reply.Write([]byte("{}"))
 
-			scamp.Info.Println("sending msg. (type: %s, envelope: %s, body: %s", reply.MessageType, reply.Envelope, reply.Bytes())
+			scamp.Info.Printf("sending msg: {requestId: %d, type: `%s`, envelope: `%s`, body: `%s`}", reply.RequestId, reply.MessageType, reply.Envelope, reply.Bytes())
 
 			_,err = client.Send(reply)
 			if err != nil {
