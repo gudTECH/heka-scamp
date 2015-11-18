@@ -78,7 +78,11 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			reply := scamp.NewMessage()
 			reply.SetMessageType(scamp.MESSAGE_TYPE_REPLY)
 			reply.SetEnvelope(scamp.ENVELOPE_JSON)
+			reply.SetRequestId(msg.RequestId)
 			reply.Write([]byte("{}"))
+
+			scamp.Info.Println("sending msg. (type: %s, envelope: %s, body: %s", reply.MessageType, reply.Envelope, reply.Bytes())
+
 			_,err = client.Send(reply)
 			if err != nil {
 				scamp.Error.Printf("could not reply to message: `%s`", err)
