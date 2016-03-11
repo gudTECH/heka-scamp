@@ -65,8 +65,6 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		scamp.Trace.Printf("registering handler: `%s`", handlerConfig)
 
 		sip.service.Register(handlerConfig.Action, func(msg *scamp.Message, client *scamp.Client) {
-			defer client.Close()
-			
 			var pack *pipeline.PipelinePack
 
 			pack = <-ir.InChan()
@@ -88,6 +86,7 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 			_,err = client.Send(reply)
 			if err != nil {
 				scamp.Error.Printf("could not reply to message: `%s`", err)
+				client.Close()
 				return
 			}
 		})
