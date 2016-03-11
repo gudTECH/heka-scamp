@@ -37,7 +37,8 @@ fields = ["Timestamp", "Logger", "DynamicFields" ]
 message_matcher = "Logger == 'logsink'"
 server = "http://localhost:9200" # TODO: this needs config injection
 encoder = "ESJsonEncoder"
-flush_interval = 50
+flush_interval = 1000
+flush_count = 5
 
 # Just in case you want to see the JSON sent to elasticsearch
 # [LogOutput]

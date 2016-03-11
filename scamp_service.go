@@ -65,6 +65,8 @@ func (sip *SCAMPInputPlugin) Run(ir pipeline.InputRunner, h pipeline.PluginHelpe
 		scamp.Trace.Printf("registering handler: `%s`", handlerConfig)
 
 		sip.service.Register(handlerConfig.Action, func(msg *scamp.Message, client *scamp.Client) {
+			defer client.Close()
+			
 			var pack *pipeline.PipelinePack
 
 			pack = <-ir.InChan()
