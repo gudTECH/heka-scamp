@@ -1,4 +1,4 @@
-FROM mozilla/heka_base
+FROM xrlx/heka_base
 
 RUN . ./env.sh && go get github.com/gudtech/scamp-go/scamp && go get golang.org/x/net/ipv4
 RUN . ./env.sh && . ./build.sh
