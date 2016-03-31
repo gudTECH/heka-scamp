@@ -35,7 +35,7 @@ func (sip *SCAMPInputPlugin) ConfigStruct() interface{} {
 }
 
 func (sip *SCAMPInputPlugin) Init(config interface{}) (err error) {
-	scamp.Initialize()
+	scamp.Initialize(scamp.DefaultConfigPath)
 	sip.conf = config.(*SCAMPInputPluginConfig)
 
 	if len(sip.conf.Handlers) < 1 {

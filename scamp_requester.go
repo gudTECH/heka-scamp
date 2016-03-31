@@ -26,7 +26,7 @@ func (sop *SCAMPOutputPlugin) ConfigStruct() interface{} {
 }
 
 func (sop *SCAMPOutputPlugin) Init(config interface{}) (err error) {
-	scamp.Initialize()
+	scamp.Initialize(scamp.DefaultConfigPath)
 
 	sop.conf = config.(*SCAMPOutputPluginConfig)
 
